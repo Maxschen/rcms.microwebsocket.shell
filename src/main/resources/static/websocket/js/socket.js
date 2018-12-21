@@ -67,5 +67,29 @@ autoWebSocket.getCurrentDateTime=function () {
         d.getDay() + " "+
         d.getHours() + ":"+
         d.getMinutes() + ":"+
-        d.getSeconds();
+        d.getSeconds() +"<DATE-TIME>";
 };
+//获取输出控制台的<p>
+autoWebSocket.getInputStreamP=function(message){
+    var renderMess = "<p>";
+    var messages = message.split("<DATE-TIME>");
+    //处理时间显示
+    renderMess = renderMess + "<span style='color: #fffefe;'>" + messages[0] + "</span>":
+    //处理内容显示
+    var context = messages[1];
+    autoWebSocket.highLightSpecialWord(context.redHighLightSpecWord);
+    autoWebSocket.highLightSpecialWord(context.yellowHighLightSpecWord);
+    renderMess = renderMess + context + "</p>";
+    return renderMess;
+};
+//显示高亮语句方法
+autoWebSocket.highLightSpecialWord=function (message,words) {
+
+    return message;
+};
+autoWebSocket.redHighLightSpecWord = [
+    "WARM","ERROR","EXCEPTION"
+];
+autoWebSocket.yellowHighLightSpecWord = [
+
+];
