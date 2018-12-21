@@ -10,7 +10,33 @@ autoWebSocket.init();
 autoWebSocket.init=function () {
     //初始化webSocket
     autoWebSocket.initWebSocket();
-
+    //校验ws初始化是否成功
+    autoWebSocket.checkWSInit(function () {
+        /**
+         * 0 - 表示连接尚未建立。
+         * 1 - 表示连接已建立，可以进行通信。
+         * 2 - 表示连接正在进行关闭。
+         * 3 - 表示连接已经关闭或者连接不能打开。
+         */
+        var ds = autoWebSocket.getCurrentDateTime();
+        switch (ws.readyState) {
+            case 0:
+                console.log(ds+"  ws连接为建立.......................................");
+                break;
+            case 1:
+                console.log(ds+"  ws连接创建成功.......................................");
+                break;
+            case 2:
+                console.log(ds+"  ws连接正在进行关闭.......................................")；
+                break;
+            case 3:
+                console.log(ds+"  ws连接已经关闭或者连接不能打开.......................................");
+                break;
+            default:
+                console.log(ds+"  ws未知状态.......................................");
+                break;
+        }
+    });
 };
 //初始化webSocket
 autoWebSocket.initWebSocket=function(){
@@ -24,15 +50,11 @@ autoWebSocket.initWebSocket=function(){
 };
 //校验ws初始化是否成功
 autoWebSocket.checkWSInit=function (checkCallBack) {
-    /**
-     * 0 - 表示连接尚未建立。
-     * 1 - 表示连接已建立，可以进行通信。
-     * 2 - 表示连接正在进行关闭。
-     * 3 - 表示连接已经关闭或者连接不能打开。
-     */
     setTimeout(function(){
         if(ws.readyState !=3){
             autoWebSocket.checkWSInit(checkCallBack);
+        }else{
+            checkCallBack();
         }
     }, 100);
 };
@@ -46,5 +68,4 @@ autoWebSocket.getCurrentDateTime=function () {
         d.getHours() + ":"+
         d.getMinutes() + ":"+
         d.getSeconds();
-
 };
