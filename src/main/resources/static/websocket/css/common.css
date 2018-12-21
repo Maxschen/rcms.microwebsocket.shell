@@ -1,0 +1,26 @@
+*{
+    background: black;
+    margin: 0px;
+    padding: 0px;
+}
+.console-div-context{
+
+}
+.console-div-inputStr{
+    height: 40px;
+    line-height: 40px;
+    width: 100%;
+    position: fixed;
+    bottom: 0px;
+    box-shadow: -1px 1px 5px #fffefe;
+    color: white;
+}
+.console-input{
+    height: 34px;
+    line-height: 34px;
+    width: 100%;
+    padding: 0 10px;
+    color: white;
+    border: 0px;
+    outline: none;
+}

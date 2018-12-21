@@ -74,7 +74,8 @@ public class WebSocketService {
         for (WebSocketService item : webSocketSet) {
             if(item.session == session){
                 this.session = item.session;
-                item.sendMessage(message);
+                //执行收到信息
+                runtimeInfoService.processShell(item,message);
             }
         }
     }
