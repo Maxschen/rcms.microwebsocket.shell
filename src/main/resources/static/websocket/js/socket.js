@@ -6,7 +6,7 @@ var wsUrl = "ws://localhost:8080/ws";
 var ws = null;
 //初始化页面实现
 autoWebSocket.init=function () {
-    $("#console-div-context").append(autoWebSocket.getInputStreamP(autoWebSocket.getCurrentDateTime()+"  ws初始化开始......................................."));
+    autoWebSocket.setMessageToConsole(autoWebSocket.getInputStreamP(autoWebSocket.getCurrentDateTime()+"  ws初始化开始......................................."));
     //初始化webSocket
     autoWebSocket.initWebSocket();
     //校验ws初始化是否成功
@@ -19,19 +19,19 @@ autoWebSocket.init=function () {
          */
         switch (ws.readyState) {
             case 0:
-                $("#console-div-context").append(autoWebSocket.getInputStreamP(autoWebSocket.getCurrentDateTime()+"  ws连接为建立......................................."));
+                autoWebSocket.setMessageToConsole(autoWebSocket.getInputStreamP(autoWebSocket.getCurrentDateTime()+"  ws连接为建立......................................."));
                 break;
             case 1:
-                $("#console-div-context").append(autoWebSocket.getInputStreamP(autoWebSocket.getCurrentDateTime()+"  ws连接创建成功......................................."));
+                autoWebSocket.setMessageToConsole(autoWebSocket.getInputStreamP(autoWebSocket.getCurrentDateTime()+"  ws连接创建成功......................................."));
                 break;
             case 2:
-                $("#console-div-context").append(autoWebSocket.getInputStreamP(autoWebSocket.getCurrentDateTime()+"  ws连接正在进行关闭......................................."));
+                autoWebSocket.setMessageToConsole(autoWebSocket.getInputStreamP(autoWebSocket.getCurrentDateTime()+"  ws连接正在进行关闭......................................."));
                 break;
             case 3:
-                $("#console-div-context").append(autoWebSocket.getInputStreamP(autoWebSocket.getCurrentDateTime()+"  ws连接已经关闭或者连接不能打开......................................."));
+                autoWebSocket.setMessageToConsole(autoWebSocket.getInputStreamP(autoWebSocket.getCurrentDateTime()+"  ws连接已经关闭或者连接不能打开......................................."));
                 break;
             default:
-                $("#console-div-context").append(autoWebSocket.getInputStreamP(autoWebSocket.getCurrentDateTime()+"  ws未知状态......................................."));
+                autoWebSocket.setMessageToConsole(autoWebSocket.getInputStreamP(autoWebSocket.getCurrentDateTime()+"  ws未知状态......................................."));
                 break;
         }
     });
@@ -42,12 +42,12 @@ autoWebSocket.initWebSocket=function(){
     ws = new WebSocket(wsUrl);
     //建立连接时触发
     ws.onopen = function () {
-        $("#console-div-context").append(autoWebSocket.getInputStreamP(autoWebSocket.getCurrentDateTime()+"  ws正在建立连接，请稍后......................................."));
+        autoWebSocket.setMessageToConsole(autoWebSocket.getInputStreamP(autoWebSocket.getCurrentDateTime()+"  ws正在建立连接，请稍后......................................."));
     }
 };
 //校验ws初始化是否成功
 autoWebSocket.checkWSInit=function (checkCallBack) {
-    $("#console-div-context").append(autoWebSocket.getInputStreamP(autoWebSocket.getCurrentDateTime()+"  ws连接检测中，请稍后......................................."));
+    autoWebSocket.setMessageToConsole(autoWebSocket.getInputStreamP(autoWebSocket.getCurrentDateTime()+"  ws连接检测中，请稍后......................................."));
     if(ws.readyState != 1 && ws.readyState != 3){
         setTimeout(function(){
             autoWebSocket.checkWSInit(checkCallBack);
@@ -74,8 +74,9 @@ autoWebSocket.getInputStreamP=function(message){
     renderMess = renderMess + "<span style='color: #00BCD4;'>" + messages[0] + "</span>";
     //处理内容显示
     let context = messages[1];
-    context = autoWebSocket.highLightSpecialWord(context,autoWebSocket.redHighLightSpecWord,"#ff7b52");
-    context = autoWebSocket.highLightSpecialWord(context,autoWebSocket.yellowHighLightSpecWord,"yellow");
+    context = autoWebSocket.highLightSpecialWord(context,autoWebSocket.e0BCD4,"#ff7b52");
+    context = autoWebSocket.highLightSpecialWord(context,autoWebSocket.e0e100,"#00e100");
+    context = autoWebSocket.highLightSpecialWord(context,autoWebSocket.FF9800,"#FF9800");
     renderMess = renderMess + context + "</p>";
     return renderMess;
 };
@@ -88,13 +89,18 @@ autoWebSocket.highLightSpecialWord=function (message,words,color) {
     }
     return message;
 };
-autoWebSocket.redHighLightSpecWord = [
-    "WARM","ERROR","EXCEPTION","请输入需要执行的命令.......................................","重新初始化ws失败，请检查服务是否正常运行.......................................",
+autoWebSocket.e0BCD4 = [
+    "WARM","ERROR","EXCEPTION","请输入需要执行的命令.......................................","" +
+    "重新初始化ws失败，请检查服务是否正常运行.......................................",
     "调用时发生错误"
 ];
-autoWebSocket.yellowHighLightSpecWord = [
+autoWebSocket.e0e100 = [
     "您输入的内容"
 ];
+autoWebSocket.FF9800 = [
+    "执行返回信息"
+];
+
 //获取输入点击事件
 autoWebSocket.sendInputStreamShell=function(e){
     let ev = window.event||e;
@@ -109,24 +115,24 @@ autoWebSocket.sendInputStreamToServer=function(){
     let input = $("#console-input").val();
     if(input == ""){
         let mess = autoWebSocket.getCurrentDateTime()+"请输入需要执行的命令.......................................";
-        $("#console-div-context").append(autoWebSocket.getInputStreamP(mess));
+        autoWebSocket.setMessageToConsole(autoWebSocket.getInputStreamP(mess));
         return;
     }
     //清空输入框
     $("#console-input").val("");
     let mess = autoWebSocket.getCurrentDateTime()+"您输入的内容："+input;
-    $("#console-div-context").append(autoWebSocket.getInputStreamP(mess));
+    autoWebSocket.setMessageToConsole(autoWebSocket.getInputStreamP(mess));
     //检查ws是否连接
     if(ws.readyState != 1){
-        $("#console-div-context").append(autoWebSocket.getInputStreamP(autoWebSocket.getCurrentDateTime()+"  ws连接已经关闭或者连接不能打开......................................."));
+        autoWebSocket.setMessageToConsole(autoWebSocket.getInputStreamP(autoWebSocket.getCurrentDateTime()+"  ws连接已经关闭或者连接不能打开......................................."));
         //重新创建ws连接
-        $("#console-div-context").append(autoWebSocket.getInputStreamP(autoWebSocket.getCurrentDateTime()+"  正在重新创建ws连接，请稍后......................................."));
+        autoWebSocket.setMessageToConsole(autoWebSocket.getInputStreamP(autoWebSocket.getCurrentDateTime()+"  正在重新创建ws连接，请稍后......................................."));
         //初始化webSocket
         autoWebSocket.initWebSocket();
         //检查连接
         autoWebSocket.checkWSInit(function () {
             if(ws.readyState != 1){
-                $("#console-div-context").append(autoWebSocket.getInputStreamP(autoWebSocket.getCurrentDateTime()+"  重新初始化ws失败，请检查服务是否正常运行......................................."));
+                autoWebSocket.setMessageToConsole(autoWebSocket.getInputStreamP(autoWebSocket.getCurrentDateTime()+"  重新初始化ws失败，请检查服务是否正常运行......................................."));
                 return;
             }
             autoWebSocket.sendInputStreamToServerImpl(input);
@@ -140,8 +146,14 @@ autoWebSocket.sendInputStreamToServerImpl=function(message){
     ws.send(message);
     //接收消息
     ws.onmessage=function(evt){
-        $("#console-div-context").append(autoWebSocket.getInputStreamP(autoWebSocket.getCurrentDateTime()+evt.data));
+        autoWebSocket.setMessageToConsole(autoWebSocket.getInputStreamP(autoWebSocket.getCurrentDateTime()+" 执行返回信息："+evt.data));
     };
+};
+autoWebSocket.setMessageToConsole=function(message){
+    //设置到页面
+    $("#console-div-context").append(message);
+    //执行设置滚动底部
+    document.documentElement.scrollTop = document.documentElement.scrollHeight
 };
 //初始化页面
 autoWebSocket.init();

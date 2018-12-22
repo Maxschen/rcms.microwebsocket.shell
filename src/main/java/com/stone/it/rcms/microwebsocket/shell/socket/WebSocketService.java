@@ -1,15 +1,13 @@
 package com.stone.it.rcms.microwebsocket.shell.socket;
 
 
-import com.stone.it.rcms.microwebsocket.shell.service.IRuntimeInfoService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.Resource;
 import javax.websocket.*;
 import javax.websocket.server.ServerEndpoint;
-import java.io.IOException;
+import java.io.*;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
@@ -19,9 +17,6 @@ import java.util.concurrent.CopyOnWriteArraySet;
 @Component
 @ServerEndpoint("/ws")
 public class WebSocketService {
-
-    @Resource
-    private IRuntimeInfoService runtimeInfoService;
 
     //日志记录器
     private Logger logger = LoggerFactory.getLogger(WebSocketService.class);
@@ -71,8 +66,12 @@ public class WebSocketService {
     @OnMessage
     public void onMessage(String message, Session session) {
         logger.info("接收客户端消息："+message);
-        //执行收到信息
-        runtimeInfoService.processShell(this,message);
+        for (WebSocketService item : webSocketSet) {
+            if(item.session == session){
+                //执行收到信息
+                processShell(message);
+            }
+        }
     }
 
     /**
@@ -81,7 +80,11 @@ public class WebSocketService {
      @OnError
      public void onError(Session session, Throwable error) {
          logger.info("调用时发生错误："+error.getMessage());
-         this.sendMessage("调用时发生错误："+error.getMessage());
+         for (WebSocketService item : webSocketSet) {
+             if(item.session == session){
+                 item.sendMessage("调用时发生错误："+error.getMessage());
+             }
+         }
      }
 
 
@@ -97,6 +100,33 @@ public class WebSocketService {
              logger.info("返回客户端消息发生异常：："+e.getMessage());
          }
      }
+
+    public void processShell(String shell){
+        try {
+            final Process process = Runtime.getRuntime().exec(shell);
+            processMessage(process.getInputStream());
+            processMessage(process.getErrorStream());
+        }catch (Exception e){
+            sendMessage("执行命令报错："+e.getMessage());
+        }
+    }
+
+    private void processMessage(InputStream inputStream) {
+        new Thread(new Runnable() {
+            public void run() {
+                Reader reader = new InputStreamReader(inputStream);
+                BufferedReader bf = new BufferedReader(reader);
+                String line = null;
+                try {
+                    while ((line = bf.readLine()) != null) {
+                        sendMessage(line);
+                    }
+                } catch (IOException e) {
+                    sendMessage("解析消息报错："+e.getMessage());
+                }
+            }
+        }).start();
+    }
 
 
     public static synchronized Long getOnlineCount() {
