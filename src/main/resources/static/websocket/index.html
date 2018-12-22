@@ -5,12 +5,13 @@
         <meta http-equiv="X-UA-Compatible" content="edge" />
         <title>WebSocket Runtime Exec Shell</title>
         <link rel="stylesheet" href="./css/common.css">
+        <script src="./js/jQuery.mini.v3.3.1.js"></script>
         <script src="./js/socket.js"></script>
     </head>
     <body>
-        <div class="console-div-context"></div>
+        <div class="console-div-context" id="console-div-context"></div>
         <div class="console-div-inputStr">
-            <input type="text" class="console-input" id="console-input">
+            <input type="text" class="console-input" id="console-input" onkeydown="autoWebSocket.sendInputStreamShell(event)">
         </div>
     </body>
 </html>

@@ -17,7 +17,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
  *
  */
 @Component
-@ServerEndpoint("/webSocket")
+@ServerEndpoint("/ws")
 public class WebSocketService {
 
     @Resource
@@ -40,14 +40,14 @@ public class WebSocketService {
      */
     @OnOpen
     public void onOpen(Session session) {
-        logger.info("..............................新建连接..............................");
+        logger.info("新建连接");
         //设置Session
         this.session = session;
         //添加到线程安全
         webSocketSet.add(this);
         //在线数加1
         addOnlineCount();
-        logger.info("..............................当前连接数："+getOnlineCount()+"..............................");
+        logger.info("当前连接数："+getOnlineCount()+"");
     }
 
     /**
@@ -55,12 +55,12 @@ public class WebSocketService {
      */
     @OnClose
     public void onClose() {
-        logger.info("..............................关闭当前连接..............................");
+        logger.info("关闭当前连接");
         //从set中删除
         webSocketSet.remove(this);
         //在线数减1
         subOnlineCount();
-        logger.info("..............................当前连接数："+getOnlineCount()+"..............................");
+        logger.info("当前连接数："+getOnlineCount()+"");
     }
 
     /**
@@ -70,14 +70,9 @@ public class WebSocketService {
      */
     @OnMessage
     public void onMessage(String message, Session session) {
-        logger.info("..............................接收客户端消息："+message);
-        for (WebSocketService item : webSocketSet) {
-            if(item.session == session){
-                this.session = item.session;
-                //执行收到信息
-                runtimeInfoService.processShell(item,message);
-            }
-        }
+        logger.info("接收客户端消息："+message);
+        //执行收到信息
+        runtimeInfoService.processShell(this,message);
     }
 
     /**
@@ -85,13 +80,8 @@ public class WebSocketService {
      */
      @OnError
      public void onError(Session session, Throwable error) {
-         logger.info("..............................调用时发生错误："+error.getMessage());
-         for (WebSocketService item : webSocketSet) {
-             if(item.session == session){
-                 this.session = session;
-                 item.sendMessage("..............................调用时发生错误："+error.getMessage());
-             }
-         }
+         logger.info("调用时发生错误："+error.getMessage());
+         this.sendMessage("调用时发生错误："+error.getMessage());
      }
 
 
@@ -104,7 +94,7 @@ public class WebSocketService {
          try{
              this.session.getBasicRemote().sendText(message);
          }catch (IOException e){
-             logger.info("..............................返回客户端消息发生异常：："+e.getMessage());
+             logger.info("返回客户端消息发生异常：："+e.getMessage());
          }
      }
 

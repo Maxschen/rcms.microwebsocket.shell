@@ -4,7 +4,12 @@
     padding: 0px;
 }
 .console-div-context{
-
+    padding-top: 5px;
+}
+.console-div-context > * {
+    color: white;
+    padding: 5px 0 5px 10px;
+    font-size: 12px;
 }
 .console-div-inputStr{
     height: 40px;
