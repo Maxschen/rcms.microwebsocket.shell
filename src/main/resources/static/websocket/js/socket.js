@@ -68,6 +68,8 @@ autoWebSocket.getCurrentDateTime=function () {
 };
 //获取输出控制台的<p>
 autoWebSocket.getInputStreamP=function(message){
+    //处理特殊字符
+    message = autoWebSocket.handSpecChart(message);
     let renderMess = "<p>";
     let messages = message.split("DATE-TIME");
     //处理时间显示
@@ -79,6 +81,14 @@ autoWebSocket.getInputStreamP=function(message){
     context = autoWebSocket.highLightSpecialWord(context,autoWebSocket.FF9800,"#FF9800");
     renderMess = renderMess + context + "</p>";
     return renderMess;
+};
+//处理特殊字符 <>
+autoWebSocket.handSpecChart=function(message){
+    /*do {
+        message = message.replace("<","&lt;");
+        message = message.replace(">","&gt;");
+    }while (message.indexOf("<") || message.indexOf(">"))*/
+    return message;
 };
 //显示高亮语句方法
 autoWebSocket.highLightSpecialWord=function (message,words,color) {
